@@ -119,7 +119,7 @@ else
         originalEvent = await EventService.GetEventByIdAsync(Id);
         if (originalEvent == null)
         {
-            Navigation.NavigateTo("/events");
+            Navigation.NavigateTo("events");
             return;
         }
 
@@ -156,7 +156,7 @@ else
             var updatedEvent = await EventService.UpdateEventAsync(Id, updateRequest);
             if (updatedEvent != null)
             {
-                Navigation.NavigateTo($"/events/details/{Id}");
+                Navigation.NavigateTo($"events/details/{Id}");
             }
         }
         catch (Exception ex)
@@ -182,7 +182,7 @@ else
             var success = await EventService.DeleteEventAsync(Id);
             if (success)
             {
-                Navigation.NavigateTo("/events");
+                Navigation.NavigateTo("events");
             }
         }
         catch (Exception ex)

@@ -86,7 +86,7 @@
             var createdEvent = await EventService.CreateEventAsync(createRequest);
             
             // Navigate back to events list
-            Navigation.NavigateTo("/events");
+            Navigation.NavigateTo("events");
         }
         catch (Exception ex)
         {
