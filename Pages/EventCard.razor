@@ -7,7 +7,7 @@
 <h1>Event Management</h1>
 
 <div class="mb-3">
-    <a href="/events/create" class="btn btn-primary">
+    <a href="events/create" class="btn btn-primary">
         <span class="bi bi-plus-circle"></span> Create New Event
     </a>
 </div>
@@ -23,7 +23,7 @@
 else if (!events.Any())
 {
     <div class="alert alert-info">
-        <p><em>No events found. <a href="/events/create">Create your first event</a></em></p>
+        <p><em>No events found. <a href="events/create">Create your first event</a></em></p>
     </div>
 }
 else
@@ -62,8 +62,8 @@ else
                         }
                     </div>
                     <div class="card-footer">
-                        <a href="/events/details/@eventItem.Id" class="btn btn-outline-primary btn-sm">View Details</a>
-                        <a href="/events/edit/@eventItem.Id" class="btn btn-outline-secondary btn-sm">Edit</a>
+                        <NavLink href="@($"events/details/{eventItem.Id}")" class="btn btn-outline-primary btn-sm">View Details</NavLink>
+                        <NavLink href="@($"events/edit/{eventItem.Id}")" class="btn btn-outline-secondary btn-sm">Edit</NavLink>
                     </div>
                 </div>
             </div>
