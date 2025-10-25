@@ -47,8 +47,8 @@ jobs:
     - name: Change base-href in index.html from / to EventEase
       run: sed -i 's/<base href="\/" \/>/<base href="\/EventEase\/" \/>/g' publish/wwwroot/index.html
 
-    - name: copy index.html to 404.html
-      run: cp publish/wwwroot/index.html publish/wwwroot/404.html
+    - name: Change base-href in 404.html from / to EventEase  
+      run: sed -i 's/<base href="\/" \/>/<base href="\/EventEase\/" \/>/g' publish/wwwroot/404.html
 
     - name: Add .nojekyll file
       run: touch publish/wwwroot/.nojekyll
