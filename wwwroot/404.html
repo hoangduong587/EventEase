@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,29 +14,8 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="EventEase.styles.css" rel="stylesheet" />
-    
-    <!-- Single Page Apps for GitHub Pages -->
-    <script type="text/javascript">
-        // Simple SPA redirect for GitHub Pages
-        // This redirects from any 404 page to the index with the path as a query parameter
-        var path = window.location.pathname.slice(1); // Remove leading slash
-        var search = window.location.search;
-        var hash = window.location.hash;
-        
-        // Extract the repo name (EventEase) from the current path
-        var pathParts = path.split('/');
-        var repoName = pathParts[0]; // Should be 'EventEase'
-        var routePath = pathParts.slice(1).join('/'); // Everything after 'EventEase'
-        
-        if (routePath) {
-            // Redirect to index.html with the route path as a query parameter
-            var newUrl = window.location.protocol + '//' + window.location.host + 
-                        '/' + repoName + '/?/' + routePath + 
-                        (search || '') + (hash || '');
-            window.location.replace(newUrl);
-        }
-    </script>
 </head>
+
 <body>
     <div id="app">
         <svg class="loading-progress">
@@ -50,22 +30,53 @@
         <a href="." class="reload">Reload</a>
         <span class="dismiss">🗙</span>
     </div>
+    
+    <!-- SPA Redirect Script - MUST come BEFORE blazor.webassembly.js -->
+    <script type="text/javascript">
+        // GitHub Pages SPA - Handle 404 redirects by storing the intended route
+        (function() {
+            // Store the intended route in sessionStorage
+            var currentPath = window.location.pathname;
+            var search = window.location.search;
+            var hash = window.location.hash;
+            
+            // Extract route after the repo name
+            var pathSegments = currentPath.split('/').filter(function(segment) {
+                return segment.length > 0;
+            });
+            
+            if (pathSegments.length > 1) {
+                // Remove 'EventEase' from the path and get the actual route
+                var route = '/' + pathSegments.slice(1).join('/');
+                sessionStorage.setItem('spa-route', route + search + hash);
+            }
+        })();
+    </script>
+    
     <script src="_framework/blazor.webassembly.js"></script>
     
-    <!-- GitHub Pages SPA support -->
+    <!-- Handle the stored route after Blazor loads -->
     <script type="text/javascript">
-        // Single Page Apps for GitHub Pages
-        // https://github.com/rafgraph/spa-github-pages
-        (function(l) {
-            if (l.search[1] === '/' ) {
-                var decoded = l.search.slice(1).split('&').map(function(s) { 
-                    return s.replace(/~and~/g, '&')
-                }).join('?');
-                window.history.replaceState(null, null,
-                    l.pathname.slice(0, -1) + decoded + l.hash
-                );
+        // Wait for Blazor to be ready, then navigate to the stored route
+        function navigateToStoredRoute() {
+            var storedRoute = sessionStorage.getItem('spa-route');
+            if (storedRoute) {
+                sessionStorage.removeItem('spa-route');
+                // Use setTimeout to ensure Blazor router is fully initialized
+                setTimeout(function() {
+                    window.history.replaceState(null, null, storedRoute);
+                    // Trigger a popstate event to make Blazor router handle the route
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                }, 100);
             }
-        }(window.location))
+        }
+        
+        // Try to navigate when Blazor is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait a bit longer for Blazor to initialize
+            setTimeout(navigateToStoredRoute, 500);
+        });
     </script>
 </body>
+
 </html>
