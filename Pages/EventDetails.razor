@@ -1,0 +1,164 @@
+@page "/events/details/{id:int}"
+@inject EventService EventService
+
+<PageTitle>Event Details - EventEase</PageTitle>
+
+@if (eventItem == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="mb-0">@eventItem.Title</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Date & Time</h6>
+                            <p class="mb-0">
+                                <i class="bi bi-calendar me-2"></i>
+                                @eventItem.Date.ToString("MMMM dd, yyyy")
+                            </p>
+                            <p class="mb-0">
+                                <i class="bi bi-clock me-2"></i>
+                                @eventItem.Date.ToString("h:mm tt")
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Location</h6>
+                            <p class="mb-0">
+                                <i class="bi bi-geo-alt me-2"></i>
+                                @eventItem.Location
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-muted">Description</h6>
+                        <p>@eventItem.Description</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Capacity</h6>
+                            <p>@eventItem.Capacity participants</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Registered</h6>
+                            <p>@eventItem.RegisteredCount / @eventItem.Capacity</p>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" 
+                                     style="width: @(((double)eventItem.RegisteredCount / eventItem.Capacity) * 100)%"
+                                     aria-valuenow="@eventItem.RegisteredCount" 
+                                     aria-valuemin="0" 
+                                     aria-valuemax="@eventItem.Capacity">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    @if (eventItem.RegisteredCount < eventItem.Capacity)
+                    {
+                        <button class="btn btn-success me-2" @onclick="RegisterForEvent">
+                            <i class="bi bi-person-plus me-1"></i> Register
+                        </button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary me-2" disabled>
+                            <i class="bi bi-person-x me-1"></i> Full
+                        </button>
+                    }
+                    <a href="/events/edit/@Id" class="btn btn-outline-primary me-2">
+                        <i class="bi bi-pencil me-1"></i> Edit
+                    </a>
+                    <a href="/events" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Events
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" @onclick="ShareEvent">
+                            <i class="bi bi-share me-1"></i> Share Event
+                        </button>
+                        <button class="btn btn-outline-info" @onclick="ExportToCalendar">
+                            <i class="bi bi-calendar-plus me-1"></i> Add to Calendar
+                        </button>
+                        <button class="btn btn-outline-warning" @onclick="ReportEvent">
+                            <i class="bi bi-flag me-1"></i> Report Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    [Inject] public NavigationManager Navigation { get; set; } = default!;
+    
+    private EventItem? eventItem;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEventDetails();
+    }
+
+    private async Task LoadEventDetails()
+    {
+        eventItem = await EventService.GetEventByIdAsync(Id);
+        if (eventItem == null)
+        {
+            // Event not found, navigate back to events list
+            Navigation.NavigateTo("/events");
+        }
+    }
+
+    private async Task RegisterForEvent()
+    {
+        if (eventItem != null)
+        {
+            var success = await EventService.RegisterForEventAsync(eventItem.Id);
+            if (success)
+            {
+                // Reload the event details to show updated registration count
+                await LoadEventDetails();
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ShareEvent()
+    {
+        // TODO: Implement share functionality
+        await Task.Delay(100);
+        // Could copy link to clipboard or open share dialog
+    }
+
+    private async Task ExportToCalendar()
+    {
+        // TODO: Implement calendar export
+        await Task.Delay(100);
+        // Could generate .ics file or integrate with calendar APIs
+    }
+
+    private async Task ReportEvent()
+    {
+        // TODO: Implement reporting functionality
+        await Task.Delay(100);
+        // Could show modal dialog for reporting reasons
+    }
+}
